@@ -3,8 +3,27 @@ import Header from '../../Header/Header';
 import { birdsBackground } from '../../Source/source';
 import { MultiCards } from '../Animals/Animals.styles';
 import {useHistory} from 'react-router-dom';
+import firebase from 'firebase/app'
+import Cards from '../../Cards/Cards';
+import Carousel from 'react-elastic-carousel';
+import {v4} from 'uuid';
 const Birds = () => {
+    // let carousel;
     const history = useHistory();
+    const [animals, setAnimals] = React.useState([]);
+    const [loading, setLoading] = React.useState(true);
+    React.useEffect(() => {
+        firebase.firestore().collection('Birds').onSnapshot((snapshot) => {
+            console.log(snapshot.docs.map(doc => console.log(doc.data())))
+            const animalCollection = snapshot.docs.map((doc) => {
+                const data = doc.data();
+                data['id'] = v4();
+                return data;
+            });
+            setAnimals(animalCollection);
+            setLoading(false)
+        })
+    }, [])
     return (
         <>
         <Header />
@@ -14,7 +33,18 @@ const Birds = () => {
         />
         
         <MultiCards>
-        <button style={{position: 'fixed', right: '0', bottom: '0', cursor: 'pointer'}} onClick={() => history.push('/birds/upload')}>UPLOAD FILES</button>
+            <button style={{position: 'fixed', right: '0', bottom: '0', cursor: 'pointer'}} 
+            onClick={() => history.push('/birds/upload')}>UPLOAD FILES</button>
+            {!loading ? <h1 style={{color: 'white', position: 'fixed', bottom: '0'}}>
+                Swipe to the next Image</h1>: null}
+            <Carousel autoPlaySpeed="2000" enableAutoPlay>
+            {animals.map((i) => {
+                return(
+                    <Cards src={i.img} name={i.name} desc={i.Desc} imgHeight={40} height='auto'/>
+                )
+            })}
+            </Carousel>
+            {loading && <h1 style={{color: 'white', position: 'absolute',}}>Loading Images...</h1>}
         </MultiCards>
         </>
     );

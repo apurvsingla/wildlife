@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const CardValue = styled.div`
-    height: 35vh;
+    height: ${props => props.height || '35vh'};
     width: 45vh;
     background-color: white;
     padding: 20px 20px 80px 20px;
@@ -9,6 +9,7 @@ export const CardValue = styled.div`
     border: 2px solid black;
     cursor: pointer;
     z-index: 100;
+    position: ${props => props.pos};
     @media only screen and (max-width: 600px) {
         height: 20vh;
         width: 35vh;
@@ -25,6 +26,6 @@ export const MultiCard = styled.div`
 `;
 
 export const CardImage = styled.img`
-    height: 100%;
+    height: ${props => props.imgHeight}%;
     width: 100%; 
 `;

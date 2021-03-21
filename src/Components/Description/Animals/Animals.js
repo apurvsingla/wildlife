@@ -3,36 +3,45 @@ import Header from '../../Header/Header';
 import {  WildSrc } from '../../Source/source';
 import { MultiCards } from './Animals.styles';
 import {useHistory} from 'react-router-dom';
-// import {decode as base64_decode, encode as base64_encode} from 'base-64';
-// import axios from 'axios';
-// import {Image, Video, Transformation, CloudinaryContext} from 'cloudinary-react';
+import firebase from 'firebase/app';
+import Cards from '../../Cards/Cards';
+import Carousel from 'react-elastic-carousel';
+import {v4} from 'uuid';
 
 const Animals = (props) => {
+    // let carousel;
     const history = useHistory();
+    const [animals, setAnimals] = React.useState([]);
+    const [loading, setLoading] = React.useState(true);
     React.useEffect(() => {
-        const handleImageUpload = async (e,err) => {
-            // const { files } = document.querySelector('input[type="file"]')
-            const data = new FormData();
-            // data.append('file', files[0]);
-            data.append('upload_preset', 'acnp0hlw');
-            const res = await fetch('https://api.cloudinary.com/v1_1/apurvsingla/image/upload', {
-              method: 'POST',
-            //   body: data
+        firebase.firestore().collection('Animals').onSnapshot((snapshot) => {
+            console.log(snapshot.docs.map(doc => console.log(doc.data())))
+            const animalCollection = snapshot.docs.map((doc) => {
+                const data = doc.data();
+                data['id'] = v4();
+                return data;
             });
-            const file = await res.json();
-            console.log(file); 
-            // setImageUrl(file.url);
-            // setImageAlt(file.alt)           
-        }
-        handleImageUpload()
-    })
+            setAnimals(animalCollection);
+            setLoading(false)
+        });
+    }, [])
     return (
         <>
         <Header />
         <div style={{backgroundImage:`url(${WildSrc})`, position: 'fixed', top: '0',
         height:"100vh", width: '100vw', backgroundSize: 'cover', filter: 'blur(2px)'}}/>
         <MultiCards>
-        <button style={{position: 'fixed', right: '0', bottom: '0', cursor: 'pointer'}} onClick={() => history.push('/animals/upload')}>UPLOAD FILES</button>
+            <button style={{position: 'fixed', right: '0', bottom: '0', cursor: 'pointer'}} onClick={() => history.push('/animals/upload')}>UPLOAD FILES</button>
+            {!loading ? <h1 style={{color: 'white', position: 'fixed', bottom: '0'}}>
+                Swipe to the next Image</h1>: null}
+            <Carousel autoPlaySpeed="2000" enableAutoPlay>
+            {animals.map((i) => {
+                return(
+                    <Cards src={i.img} name={i.name} desc={i.Desc} imgHeight={40} height='auto'/>
+                )
+            })}
+            </Carousel>
+            {loading && <h1 style={{color: 'white', position: 'absolute',}}>Loading Images...</h1>}
         </MultiCards>
         </>
     );

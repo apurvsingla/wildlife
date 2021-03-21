@@ -2,28 +2,54 @@ import React from 'react';
 import Header from '../Header/Header';
 import { WidgetLoader, Widget } from 'react-cloudinary-upload-widget'
 import {useHistory} from 'react-router-dom';
-// import {  WildSrc } from '../../Source/source';
-// import { MultiCards } from './Animals.styles';
-// import {decode as base64_decode, encode as base64_encode} from 'base-64';
-// import axios from 'axios';
-// import {Image, Video, Transformation, CloudinaryContext} from 'cloudinary-react';
+import firebase from 'firebase/app';
 import './upload.css';
-// import env from "react-dotenv";
 const Upload = (props) => {
     const history = useHistory();
     const [imageUrl, setImageUrl] = React.useState(null);
     const [imageAlt, setImageAlt] = React.useState(null);
+    const [anName, setAnName] = React.useState('');
+    const [descriptionValue, setDescriptionValue] = React.useState('');
+
     const uploadImageFolder = () => {
         if(history.location.pathname === '/birds/upload') return "Birds"
         else return "Animals"
     }
-    console.log(process.env.REACT_APP_NAME)
+    const uploadData = (url, name, desc) => {
+      firebase.firestore().collection(uploadImageFolder())
+      .add({
+        img: (imageUrl),
+        name: (anName),
+        Desc: (descriptionValue),
+      }).then((docRef) => {
+        // console.log('Animals Uploaded', docRef);
+        setImageUrl('');
+        setAnName("");
+        setDescriptionValue("");
+      }).catch((error) => {
+        // console.log("Error:", error)
+      })
+    }
+    const handleChange = (e,value) => {
+      // console.log(value)
+      setAnName(e.target.value);
+    }
+    const handleDescChange = (e,value) => {
+      // console.log(value)
+      setDescriptionValue(e.target.value);
+    }
     return (
         <>
         <Header />
         <main className="App" style={{position: 'absolute'}}>
         <section className="left-side">
-          <form>
+          <form onSubmit={(e) => {
+            e.preventDefault();
+          }}>
+            <label for={'name'}>Name:</label>
+            <input type="text" id={'name'} value={anName} onChange={(e) => handleChange(e)}/>
+            <label for={'desc'}>Description:</label>
+            <input type="text" id={'desc'} value={descriptionValue} onChange={(e) => handleDescChange(e)}/>
             <WidgetLoader /> 
             <Widget
                 sources={['local', 'camera', 'dropbox']} 
@@ -43,9 +69,9 @@ const Upload = (props) => {
                 folder={uploadImageFolder()}
                 cropping={true}
                 onSuccess={(e) => {
-                    console.log(e)
+                    // console.log(e)
                     setImageUrl(e.info.url);
-                    setImageAlt(e.info.original_filename)
+                    setImageAlt(e.info.original_filename);
                 }} 
                 onFailure={() => console.log('Error')}
                 logging={false}
@@ -56,6 +82,7 @@ const Upload = (props) => {
                 withCredentials={true}
                 unique_filename={true} 
             />
+            <button type="submit" onClick={() => uploadData()}>Submit Data</button>
           </form>
         </section>
         <section className="right-side">
