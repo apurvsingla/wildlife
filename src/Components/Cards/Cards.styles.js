@@ -12,7 +12,7 @@ export const CardValue = styled.div`
     z-index: 100;
     position: ${props => props.pos};
     @media only screen and (max-width: 600px) {
-        height: 20vh;
+        height: ${props => props.height || '20vh'};
         width: 35vh;
     }
 `;
