@@ -5,7 +5,7 @@ import { MultiCards } from '../Animals/Animals.styles';
 import {useHistory} from 'react-router-dom';
 import firebase from 'firebase/app'
 import Cards from '../../Cards/Cards';
-import Carousel from 'react-elastic-carousel';
+import Carousel from 'react-material-ui-carousel'
 import {v4} from 'uuid';
 const Birds = () => {
     // let carousel;
@@ -29,13 +29,13 @@ const Birds = () => {
         <Header />
         <div 
         style={{backgroundImage:`url(${birdsBackground})`, position: 'fixed', 
-        height:"100vh", width: '100vw', backgroundSize: 'cover', filter: 'blur(1px)', top: '0'}}
+        height:"100vh", width: '100vw', backgroundSize: 'cover', filter: 'blur(2px)', top: '0'}}
         />
         
         <MultiCards>
-            <button style={{position: 'fixed', right: '0', bottom: '0', cursor: 'pointer'}} 
+            <button style={{position: 'fixed', right: '0', top: '0', cursor: 'pointer', padding: '5px', fontSize: '1.2rem'}} 
             onClick={() => history.push('/birds/upload')}>UPLOAD FILES</button>
-            {!loading ? <h1 style={{color: 'white', position: 'fixed', bottom: '0'}}>
+            {!loading ? <h1 style={{color: 'white', position: 'fixed', bottom: '0',textAlign: 'center'}}>
                 Swipe to the next Image</h1>: null}
             <Carousel autoPlaySpeed="2000" enableAutoPlay>
             {animals.map((i) => {

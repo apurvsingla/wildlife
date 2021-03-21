@@ -3,7 +3,8 @@ import styled from 'styled-components';
 export const CardValue = styled.div`
     height: ${props => props.height || '35vh'};
     width: 45vh;
-    background-color: white;
+    background-color: ${props => props.color || 'white'};
+    color: ${props => props.textColor || 'black'};
     padding: 20px 20px 80px 20px;
     border-radius: 25px;
     border: 2px solid black;
